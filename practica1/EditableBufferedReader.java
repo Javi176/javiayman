@@ -60,6 +60,35 @@ public class EditableBufferedReader extends BufferedReader {
             return a;
        }
 
-
+     public String readLine() throws IOException{
+         try{
+            setRaw();
+            Line line = new Line();
+            int key;
+            while ((key = this.read()) != '\r'){
+                switch(key) {
+                    case -RIGHT: line.right();
+                        break;
+                    case -LEFT: line.left();
+                        break;
+                    case -HOME: line.home();
+                        break;
+                    case -END: line.end();
+                        break;
+                    case -INS: line.insert();
+                        break;
+                    case -DEL: line.delete();
+                        break;
+                    default: line.addCharacter((char) key);
+                }
+            }
+         return line.toString();
+     } catch(IOException e) {
+         throw e;
+     } finally {
+         unsetRaw();
+     }
+    }
+         
 
     }
