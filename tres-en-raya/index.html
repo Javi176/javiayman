@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Tres en Raya</title>
+  <style>
+   
+    body {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      margin: 0;
+    }
+
+    
+    #input-nom-jugador {
+      margin-bottom: 10px;
+      padding: 5px;
+      font-size: 16px;
+    }
+
+    #info-jugadors {
+      position: absolute;
+      left: 10px;
+      top: 10px;
+    }
+
+    .jugador {
+      font-size: 18px;
+      margin-bottom: 5px;
+    }
+
+    .jugador-actual {
+      font-weight: bold;
+    }
+
+    .jugador-X {
+      color: blue;
+    }
+
+    .jugador-O {
+      color: red;
+    }
+
+    #boto-unirse-partida {
+      padding: 10px;
+      font-size: 16px;
+      cursor: pointer;
+    }
+
+    #tauler-joc {
+      margin-top: 20px;
+      display: grid;
+      grid-template-columns: repeat(3, 80px); 
+      grid-template-rows: repeat(3, 80px); 
+      gap: 5px; 
+    }
+
+    .cell {
+      border: 1px solid #000;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      font-size: 32px; 
+    }
+
+    .cell:hover {
+      background-color: #ddd;
+    }
+
+    #conclusions-joc {
+      margin-top: 20px;
+      font-size: 18px;
+    }
+  </style>
+</head>
+<body>
+  <h1>Tres en Raya</h1>
+  <div id="info-jugadors"></div>
+  <input type="text" id="input-nom-jugador" placeholder="Introduce tu nombre">
+  <button id="boto-unirse-partida">Jugar</button>
+  <div id="tauler-joc"></div>
+  <div id="conclusions-joc"></div>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const socket = io();
+      const inputNomJugador = document.getElementById('input-nom-jugador');
+      const botoUnirsePartida = document.getElementById('boto-unirse-partida');
+      const infoJugadors = document.getElementById('info-jugadors');
+      const Tauler = document.getElementById('tauler-joc');
+      const Conclusions = document.getElementById('conclusions-joc');
+
+      botoUnirsePartida.addEventListener('click', () => {
+        const nomJugador = inputNomJugador.value.trim();
+        if (nomJugador) {
+          socket.emit('unirsePartida', { nomJugador });
+          inputNomJugador.disabled = true;
+          botoUnirsePartida.style.display = 'none';
+        } else {
+          alert('Introduce tu nombre');
+        }
+      });
+
+      socket.on('actualitzarJoc', (joc) => {
+        Tauler.innerHTML = '';
+        const taulerJoc = joc.tauler;
+        for (let fila = 0; fila < taulerJoc.length; fila++) {
+          for (let columna = 0; columna < taulerJoc[fila].length; columna++) {
+            const cell = createCell(fila, columna, taulerJoc[fila][columna]);
+            Tauler.appendChild(cell);
+          }
+        }
+      });
+
+      const createCell = (fila, columna, valor) => {
+        const cell = document.createElement('div');
+        cell.classList.add('cell');
+        cell.dataset.fila = fila;
+        cell.dataset.columna = columna;
+        cell.innerText = valor === 'X' ? 'X' : (valor === 'O' ? 'O' : '');
+        cell.addEventListener('click', () => ferMoviment(fila, columna));
+        return cell;
+      };
+
+      const ferMoviment = (fila, columna) => {
+        socket.emit('ferMoviment', { fila, columna });
+      };
+
+      socket.on('gameOver', (data) => {
+        const resultat = data.resultat;
+        if (resultat === 'empat') {
+          Conclusions.innerText = 'El juego ha terminado en empate.';
+        } else if (resultat === 'guanyador') {
+          const guanyador = data.guanyador;
+          Conclusions.innerText = `¡Ha ganado ${guanyador}!`;
+        }
+
+        const botoReiniciar = document.createElement('button');
+        botoReiniciar.textContent = 'Reiniciar Partida';
+        botoReiniciar.addEventListener('click', () => {
+          socket.emit('reiniciarPartida');
+        });
+        Conclusions.appendChild(botoReiniciar);
+      });
+
+      socket.on('amagarResultat', () => {
+      
+        Conclusions.innerHTML = '';
+      });
+
+      socket.on('infoJugadors', (info) => {
+        infoJugadors.innerHTML = '<h2>Jugadores:</h2>';
+        info.jugadors.forEach((jugador) => {
+          const classeJugador = jugador.symbol === 'X' ? 'jugador-X' : 'jugador-O';
+          const classeActual = info.tornJugador === jugador.symbol ? 'jugador-actual' : '';
+          infoJugadors.innerHTML += `<p class="${classeJugador} ${classeActual}">${jugador.nom}</p>`;
+        });
+      });
+    });
+  </script>
+</body>
+</html>
