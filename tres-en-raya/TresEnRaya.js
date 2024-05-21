@@ -12,28 +12,33 @@ function columnaPlena(tauler, columna) {
 function ferMoviment(tauler, fila, columna, jugador) {
   if (tauler[fila][columna] === 0) {
     tauler[fila][columna] = jugador;
-    return true; 
+    return true; // Movimiento válido
   }
-  return false; 
+  return false; // Movimiento inválido
 }
 
 function checkVictoria(tauler, jugador) {
+  // Comprobar filas y columnas
   for (let i = 0; i < FILES; i++) {
     if (
-      tauler[i][0] === jugador && tauler[i][1] === jugador && tauler[i][2] === jugador ||
-      tauler[0][i] === jugador && tauler[1][i] === jugador && tauler[2][i] === jugador
+      (tauler[i][0] === jugador && tauler[i][1] === jugador && tauler[i][2] === jugador) ||
+      (tauler[0][i] === jugador && tauler[1][i] === jugador && tauler[2][i] === jugador)
     ) {
       return true;
     }
   }
+
+  // Comprobar diagonales
   if (
-    tauler[0][0] === jugador && tauler[1][1] === jugador && tauler[2][2] === jugador ||
-    tauler[0][2] === jugador && tauler[1][1] === jugador && tauler[2][0] === jugador
+    (tauler[0][0] === jugador && tauler[1][1] === jugador && tauler[2][2] === jugador) ||
+    (tauler[0][2] === jugador && tauler[1][1] === jugador && tauler[2][0] === jugador)
   ) {
     return true;
   }
 
-  if (tauler.every(fila => fila.every(cell => cell !== 0))) {
+  // Comprobar empate
+  const isEmpate = tauler.flat().every(cell => cell !== 0);
+  if (isEmpate) {
     return 'empate';
   }
 
