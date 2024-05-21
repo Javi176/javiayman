@@ -12,9 +12,9 @@ function columnaPlena(tauler, columna) {
 function ferMoviment(tauler, fila, columna, jugador) {
   if (tauler[fila][columna] === 0) {
     tauler[fila][columna] = jugador;
-    return true; // Movimiento válido
+    return true; 
   }
-  return false; // Movimiento inválido
+  return false; 
 }
 
 function checkVictoria(tauler, jugador) {
