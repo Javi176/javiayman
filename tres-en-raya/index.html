@@ -5,7 +5,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Tres en Raya</title>
   <style>
-   
     body {
       display: flex;
       flex-direction: column;
@@ -15,7 +14,6 @@
       margin: 0;
     }
 
-    
     #input-nom-jugador {
       margin-bottom: 10px;
       padding: 5px;
@@ -54,9 +52,9 @@
     #tauler-joc {
       margin-top: 20px;
       display: grid;
-      grid-template-columns: repeat(3, 80px); 
-      grid-template-rows: repeat(3, 80px); 
-      gap: 5px; 
+      grid-template-columns: repeat(3, 80px);
+      grid-template-rows: repeat(3, 80px);
+      gap: 5px;
     }
 
     .cell {
@@ -65,7 +63,7 @@
       align-items: center;
       justify-content: center;
       cursor: pointer;
-      font-size: 32px; 
+      font-size: 32px;
     }
 
     .cell:hover {
@@ -92,8 +90,8 @@
       const inputNomJugador = document.getElementById('input-nom-jugador');
       const botoUnirsePartida = document.getElementById('boto-unirse-partida');
       const infoJugadors = document.getElementById('info-jugadors');
-      const Tauler = document.getElementById('tauler-joc');
-      const Conclusions = document.getElementById('conclusions-joc');
+      const tauler = document.getElementById('tauler-joc');
+      const conclusions = document.getElementById('conclusions-joc');
 
       botoUnirsePartida.addEventListener('click', () => {
         const nomJugador = inputNomJugador.value.trim();
@@ -107,12 +105,12 @@
       });
 
       socket.on('actualitzarJoc', (joc) => {
-        Tauler.innerHTML = '';
+        tauler.innerHTML = '';
         const taulerJoc = joc.tauler;
         for (let fila = 0; fila < taulerJoc.length; fila++) {
           for (let columna = 0; columna < taulerJoc[fila].length; columna++) {
             const cell = createCell(fila, columna, taulerJoc[fila][columna]);
-            Tauler.appendChild(cell);
+            tauler.appendChild(cell);
           }
         }
       });
@@ -134,10 +132,10 @@
       socket.on('gameOver', (data) => {
         const resultat = data.resultat;
         if (resultat === 'empat') {
-          Conclusions.innerText = 'El juego ha terminado en empate.';
+          conclusions.innerText = 'El juego ha terminado en empate.';
         } else if (resultat === 'guanyador') {
           const guanyador = data.guanyador;
-          Conclusions.innerText = `¡Ha ganado ${guanyador}!`;
+          conclusions.innerText = `¡Ha ganado ${guanyador}!`;
         }
 
         const botoReiniciar = document.createElement('button');
@@ -145,12 +143,11 @@
         botoReiniciar.addEventListener('click', () => {
           socket.emit('reiniciarPartida');
         });
-        Conclusions.appendChild(botoReiniciar);
+        conclusions.appendChild(botoReiniciar);
       });
 
       socket.on('amagarResultat', () => {
-      
-        Conclusions.innerHTML = '';
+        conclusions.innerHTML = '';
       });
 
       socket.on('infoJugadors', (info) => {
