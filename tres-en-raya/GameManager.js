@@ -16,7 +16,7 @@ function handleConnection(socket, io) {
         io.emit('actualitzarJoc', joc);
       }
     } else {
-      socket.emit('missatgeError', 'La sala de juego esta llena!');
+      socket.emit('missatgeError', 'La sala de juego está llena!');
     }
   });
 
@@ -25,7 +25,7 @@ function handleConnection(socket, io) {
       if (ferMoviment(joc.tauler, fila, columna, joc.jugadors[joc.tornJugador].symbol)) {
         io.emit('actualitzarJoc', joc);
         const result = checkVictoria(joc.tauler, joc.jugadors[joc.tornJugador].symbol);
-        if (result === 'empat') {
+        if (result === 'empate') {
           joc.finpartida = true;
           io.emit('gameOver', { resultat: 'empat' });
         } else if (result) {
@@ -36,25 +36,24 @@ function handleConnection(socket, io) {
           io.emit('infoJugadors', { jugadors: joc.jugadors, tornJugador: joc.tornJugador });
         }
       } else {
-        socket.emit('missatgeError', 'La casilla ya esta ocupada!');
+        socket.emit('missatgeError', 'La casilla ya está ocupada!');
       }
     }
   });
 
- socket.on('reiniciarPartida', () => {
-  
-  joc.tauler = inicialitzarTauler(); 
-  joc.finpartida = false;
-  joc.tornJugador = 0;
- 
-  io.emit('actualitzarJoc', joc);
-  io.emit('infoJugadors', { jugadors: joc.jugadors, tornJugador: joc.tornJugador });
-  io.emit('amagarResultat');
-});
-
+  socket.on('reiniciarPartida', () => {
+    // Reiniciar la partida
+    joc.tauler = inicialitzarTauler(); 
+    joc.finpartida = false;
+    joc.tornJugador = 0;
+   
+    io.emit('actualitzarJoc', joc);
+    io.emit('infoJugadors', { jugadors: joc.jugadors, tornJugador: joc.tornJugador });
+    io.emit('amagarResultat');
+  });
 
   socket.on('disconnect', () => {
-    console.log(`Client desconectado: ${socket.id}`);
+    console.log(`Cliente desconectado: ${socket.id}`);
     joc.jugadors = joc.jugadors.filter((player) => player.id !== socket.id);
     if (joc.jugadors.length === 0) {
       joc.finpartida = false;
