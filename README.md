@@ -15,4 +15,4 @@
 
 **Proyecto:**
 
-- Crear el juego tres en raya (tictactoe) utilizando JavaScript HTML y CSS
+- Crear el juego tres en raya (tic-tac-toe) utilizando JavaScript HTML y CSS
