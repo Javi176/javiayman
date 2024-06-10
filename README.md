@@ -15,4 +15,4 @@
 
 **Proyecto:**
 
-- Crear el juego tres en raya (tictactoe) utilizando JavaScritpt HTML y CSS
+- Crear el juego tres en raya (tictactoe) utilizando JavaScript HTML y CSS
